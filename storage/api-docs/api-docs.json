@@ -1,0 +1,471 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Document Management API",
+        "description": "API for managing documents and their fields",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/documents": {
+            "get": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Get a list of documents",
+                "description": "Returns a list of documents filtered by status",
+                "operationId": "getDocuments",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter documents by status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "ACTIVE",
+                            "enum": [
+                                "ACTIVE",
+                                "INACTIVE",
+                                "DRAFT"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "document_name": {
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "DRAFT",
+                                                    "INACTIVE",
+                                                    "ACTIVE"
+                                                ]
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "field_count": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Create a new document",
+                "description": "Creates a new document with the given details",
+                "operationId": "storeDocument",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "document_name": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "DRAFT",
+                                            "INACTIVE",
+                                            "ACTIVE"
+                                        ]
+                                    },
+                                    "fields": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "field_name": {
+                                                    "type": "string"
+                                                },
+                                                "field_type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "input",
+                                                        "select",
+                                                        "number",
+                                                        "textarea"
+                                                    ]
+                                                },
+                                                "is_mandatory": {
+                                                    "type": "boolean"
+                                                },
+                                                "select_values": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    },
+                                                    "nullable": true
+                                                },
+                                                "current_value": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "document_name": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "DRAFT",
+                                                "INACTIVE",
+                                                "ACTIVE"
+                                            ]
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "details": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "field_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "field_type": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "input",
+                                                            "select",
+                                                            "number",
+                                                            "textarea"
+                                                        ]
+                                                    },
+                                                    "is_mandatory": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "select_values": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object"
+                                                        },
+                                                        "nullable": true
+                                                    },
+                                                    "current_value": {
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/document/{id}": {
+            "get": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Get a specific document",
+                "description": "Returns a specific document by its ID",
+                "operationId": "getDocumentById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Document ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "document_name": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "DRAFT",
+                                                "INACTIVE",
+                                                "ACTIVE"
+                                            ]
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "fields": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "field_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "field_type": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "input",
+                                                            "select",
+                                                            "number",
+                                                            "textarea"
+                                                        ]
+                                                    },
+                                                    "current_value": {
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    },
+                                                    "select_values": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object"
+                                                        },
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Document not found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Update a document's field values",
+                "description": "Updates the field values of a specific document",
+                "operationId": "updateDocument",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Document ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "fields": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "current_value": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "document_name": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "DRAFT",
+                                                "INACTIVE",
+                                                "ACTIVE"
+                                            ]
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "details": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "field_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "field_type": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "input",
+                                                            "select",
+                                                            "number",
+                                                            "textarea"
+                                                        ]
+                                                    },
+                                                    "is_mandatory": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "select_values": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object"
+                                                        },
+                                                        "nullable": true
+                                                    },
+                                                    "current_value": {
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Document not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "DocumentUpdate": {
+                "required": [
+                    "fields"
+                ],
+                "properties": {
+                    "fields": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "current_value": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Documents",
+            "description": "Documents"
+        }
+    ]
+}
